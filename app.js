@@ -27,14 +27,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
-app.get('/users', (req, res) => {
+app.get('/get-users', (req, res) => {
   db.query('SELECT * FROM users', (err, results) => {
     if (err) throw err;
     res.json(results);
   });
 });
 
-app.post('/users', (req, res) => {
+app.post('/add-user', (req, res) => {
   const {
     designation,
     email,
@@ -66,7 +66,7 @@ app.post('/users', (req, res) => {
   });
 });
 
-app.put('/users/:id', (req, res) => {
+app.put('/update-user/:id', (req, res) => {
   const userId = req.params.id;
   const {
     designation,
@@ -100,7 +100,7 @@ app.put('/users/:id', (req, res) => {
   });
 });
 
-app.delete('/users/:id', (req, res) => {
+app.delete('/delete-user/:id', (req, res) => {
   const userId = req.params.id;
   db.query('DELETE FROM users WHERE id = ?', userId, (err, result) => {
     if (err) throw err;
