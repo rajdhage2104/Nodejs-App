@@ -7,10 +7,10 @@ const port = 3000;
 
 // MySQL connection configuration
 const db = mysql.createConnection({
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
+  host: process.env.MYSQL_HOST || 'microservice-db.cvggya6kg1r7.us-east-1.rds.amazonaws.com',
+  user: process.env.MYSQL_USER || 'admin',
+  password: process.env.MYSQL_PASSWORD || 'admin123',
+  database: process.env.MYSQL_DATABASE || 'todoappdb',
 });
 
 // Connect to MySQL
@@ -112,3 +112,5 @@ app.delete('/delete-user/:id', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+module.exports = app;
