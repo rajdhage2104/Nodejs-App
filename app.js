@@ -13,6 +13,8 @@ const db = mysql.createConnection({
   database: process.env.MYSQL_DATABASE || 'todoappdb',
 });
 
+module.exports = { app };
+
 // Connect to MySQL
 if (process.env.NODE_ENV !== 'test') {
   db.connect((err) => {
@@ -117,4 +119,3 @@ if (process.env.NODE_ENV !== 'test') {
   });
 }
 
-module.exports = app;
