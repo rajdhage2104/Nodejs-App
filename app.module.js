@@ -5,22 +5,29 @@ const mysql = require('mysql');
 // Create express app
 const app = express();
 
-// MySQL connection configuration
-const db = mysql.createConnection({
-  host: process.env.MYSQL_HOST || 'localhost',
-  user: process.env.MYSQL_USER || 'root',
-  password: process.env.MYSQL_PASSWORD || '',
-  database: process.env.MYSQL_DATABASE || 'users_db',
-});
+// MySQL connection configuration - moved to a function to make it testable
+const createDbConnection = () => {
+  return mysql.createConnection({
+    host: process.env.MYSQL_HOST || 'microservice-db.cvggya6kg1r7.us-east-1.rds.amazonaws.com',
+    user: process.env.MYSQL_USER || 'admin',
+    password: process.env.MYSQL_PASSWORD || 'admin123',
+    database: process.env.MYSQL_DATABASE || 'todoappdb',
+  });
+};
+
+// Create the database connection
+const db = createDbConnection();
 
 // Connect to MySQL
-db.connect((err) => {
-  if (err) {
-    console.error('MySQL connection error:', err);
-  } else {
-    console.log('Connected to MySQL');
-  }
-});
+if (process.env.NODE_ENV !== 'test') {
+  db.connect((err) => {
+    if (err) {
+      console.error('MySQL connection error:', err);
+    } else {
+      console.log('Connected to MySQL');
+    }
+  });
+}
 
 // Middleware
 app.use(bodyParser.json());
@@ -109,7 +116,7 @@ app.delete('/delete-user/:id', (req, res) => {
 });
 
 // Export the app and db for testing
-module.exports = { app, db };
+module.exports = { app, db, createDbConnection };
 
 // Only start the server if this file is run directly
 if (require.main === module) {

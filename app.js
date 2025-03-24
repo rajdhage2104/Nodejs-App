@@ -14,13 +14,15 @@ const db = mysql.createConnection({
 });
 
 // Connect to MySQL
-db.connect((err) => {
-  if (err) {
-    console.error('MySQL connection error:', err);
-  } else {
-    console.log('Connected to MySQL');
-  }
-});
+if (process.env.NODE_ENV !== 'test') {
+  db.connect((err) => {
+    if (err) {
+      console.error('MySQL connection error:', err);
+    } else {
+      console.log('Connected to MySQL');
+    }
+  });
+}
 
 // Middleware
 app.use(bodyParser.json());
@@ -109,8 +111,10 @@ app.delete('/delete-user/:id', (req, res) => {
 });
 
 // Start the server
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+  });
+}
 
 module.exports = app;

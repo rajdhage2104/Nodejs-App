@@ -1,6 +1,9 @@
 const request = require('supertest');
 const mysql = require('mysql');
 
+// Set NODE_ENV to test
+process.env.NODE_ENV = 'test';
+
 // Mock mysql
 jest.mock('mysql');
 
@@ -20,10 +23,13 @@ describe('User API Endpoints with Modular App', () => {
     // Mock the createConnection method
     mysql.createConnection.mockReturnValue(mockConnection);
     
+    // Clear the module cache to ensure a fresh import
+    jest.resetModules();
+    
     // Import the app module (this needs to happen after mocking)
     const appModule = require('../app.module');
     app = appModule.app;
-    db = appModule.db;
+    db = mockConnection; // Use our mock connection instead of the one from the module
   });
   
   afterEach(() => {
@@ -108,12 +114,18 @@ describe('User API Endpoints with Modular App', () => {
         // Missing other required fields
       };
       
+      // Mock the db.query implementation for this test
+      mockConnection.query.mockImplementation((query, values, callback) => {
+        callback(null, { insertId: 1 });
+      });
+      
       const response = await request(app)
         .post('/add-user')
         .send(incompleteUser);
       
       // The current implementation will try to insert null/undefined values
       // This test verifies the current behavior, but you might want to add validation
+      expect(response.status).toBe(200);
       expect(mockConnection.query).toHaveBeenCalledWith(
         expect.any(String),
         expect.arrayContaining([undefined]), // At least one undefined value
